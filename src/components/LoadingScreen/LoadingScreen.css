@@ -1,0 +1,80 @@
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #050302;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.loading-screen.exit {
+  opacity: 0;
+  transform: scale(1.04);
+  pointer-events: none;
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 36px;
+  z-index: 1;
+}
+
+/* ── Name letters ── */
+.loading-name {
+  display: flex;
+  gap: 8px;
+  user-select: none;
+}
+
+.loading-letter {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(48px, 10vw, 96px);
+  font-weight: 900;
+  color: var(--gold-light);
+  letter-spacing: 0.15em;
+  transition: opacity 0.3s ease, text-shadow 0.3s ease, transform 0.3s ease;
+  will-change: opacity, text-shadow, transform;
+}
+
+/* ── Progress bar ── */
+.loading-bar-track {
+  width: clamp(180px, 40vw, 320px);
+  height: 2px;
+  background: rgba(200, 146, 42, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.loading-bar-fill {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  transform-origin: left;
+  transition: transform 0.1s ease-out;
+  box-shadow: 0 0 12px rgba(200, 146, 42, 0.6);
+  border-radius: 2px;
+}
+
+/* ── Percentage ── */
+.loading-percent {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: rgba(200, 146, 42, 0.35);
+  font-weight: 600;
+}
+
+/* ── Mobile adjustments ── */
+@media (max-width: 600px) {
+  .loading-name {
+    gap: 4px;
+  }
+  .loading-bar-track {
+    width: 60vw;
+  }
+}

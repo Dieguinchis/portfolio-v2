@@ -1,0 +1,305 @@
+:root {
+  --gold: #c8922a;
+  --gold-light: #e8b84b;
+  --dark: #0a0704;
+  --void: #050302;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+  background: var(--void);
+  cursor: none;
+  scroll-behavior: smooth;
+}
+
+/* ── Custom cursor ── */
+.cursor {
+  position: fixed;
+  width: 6px; height: 6px;
+  background: var(--gold-light);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 100000;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: screen;
+}
+.cursor-ring {
+  position: fixed;
+  width: 28px; height: 28px;
+  border: 1px solid rgba(200,146,42,0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s, border-color 0.3s;
+}
+
+/* ══════════════════════════════
+   GLOBAL BACKGROUND CANVAS
+   Fixed layer that morphs on scroll
+══════════════════════════════ */
+#bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Base warm gradient — morphs via JS */
+.bg-base {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 120% 80% at 20% 60%, #3a1a05 0%, #150c03 40%, var(--void) 100%);
+  transition: background 0.05s linear;
+}
+
+/* Desert elements — fade out on scroll */
+.desert-wrap {
+  position: absolute; inset: 0;
+  will-change: opacity, transform;
+}
+.desert-floor {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 45%;
+  background: linear-gradient(to top, #1a0d04 0%, #2a1508 15%, #3d2010 30%, #5a300e 50%, transparent 100%);
+  clip-path: polygon(0 30%, 8% 20%, 20% 35%, 35% 15%, 50% 28%, 65% 12%, 80% 25%, 92% 10%, 100% 20%, 100% 100%, 0 100%);
+}
+.dune-layer {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 55%;
+  background: linear-gradient(160deg, transparent 40%, rgba(90,48,20,0.3) 60%, rgba(140,80,30,0.2) 80%);
+  clip-path: polygon(0 60%, 15% 40%, 30% 55%, 50% 35%, 70% 50%, 85% 30%, 100% 45%, 100% 100%, 0 100%);
+}
+.path-line {
+  position: absolute;
+  bottom: 18%; left: 50%;
+  width: 2px; height: 35%;
+  transform: translateX(-50%) perspective(300px) rotateX(60deg);
+  transform-origin: bottom center;
+  background: linear-gradient(to top, rgba(200,146,42,0.6), rgba(200,146,42,0.05));
+  filter: blur(0.5px);
+}
+
+/* Sun glow */
+.sun-glow {
+  position: absolute;
+  bottom: 35%; left: 12%;
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, rgba(255,180,60,0.9) 0%, rgba(220,100,20,0.6) 25%, rgba(180,60,10,0.2) 55%, transparent 75%);
+  border-radius: 50%;
+  filter: blur(8px);
+  animation: sunPulse 4s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+@keyframes sunPulse {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 1; }
+}
+
+/* Planet */
+.planet-arc {
+  position: absolute;
+  top: -10%; right: -5%;
+  width: 65vw; height: 95vh;
+  border-radius: 50%;
+  background: conic-gradient(from 200deg, #1a0d05 0deg, #3d2010 40deg, #6a3818 70deg, #8a5020 90deg, #6a3818 110deg, #3d2010 140deg, #1a0d05 180deg, #0a0502 360deg);
+  box-shadow: inset -20px 0 60px rgba(0,0,0,0.8), inset 10px 0 40px rgba(100,50,10,0.3), 0 0 80px rgba(0,0,0,0.9), -30px 0 100px rgba(180,80,20,0.15);
+  animation: planetFloat 8s ease-in-out infinite;
+  will-change: opacity, transform;
+}
+.planet-arc::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  background: repeating-linear-gradient(-35deg, transparent 0px, transparent 18px, rgba(0,0,0,0.15) 18px, rgba(0,0,0,0.15) 20px);
+  mix-blend-mode: multiply;
+}
+.planet-arc::after {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(ellipse 60% 80% at 30% 30%, rgba(180,100,40,0.3) 0%, transparent 60%);
+}
+@keyframes planetFloat {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(0.5deg); }
+}
+
+/* Haze */
+.haze {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 40% at 15% 70%, rgba(200,100,20,0.12) 0%, transparent 60%), radial-gradient(ellipse 60% 30% at 80% 80%, rgba(100,40,10,0.08) 0%, transparent 50%);
+  mix-blend-mode: screen;
+  animation: hazeShift 6s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+@keyframes hazeShift { 0% { opacity: 0.7; } 100% { opacity: 1; } }
+
+/* About-section ambient glow — fades IN on scroll */
+.about-ambient {
+  position: absolute; inset: 0;
+  opacity: 0;
+  background:
+    radial-gradient(ellipse 80% 70% at 15% 50%, rgba(12,6,2,0.98) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 80% at 85% 30%, rgba(40,18,5,0.6) 0%, transparent 60%),
+    radial-gradient(ellipse 100% 50% at 50% 100%, rgba(10,5,1,1) 0%, transparent 60%);
+  will-change: opacity;
+}
+
+
+/* Particles */
+.particles { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.particle {
+  position: absolute;
+  background: rgba(200,146,42,0.6);
+  border-radius: 50%;
+  animation: drift linear infinite;
+}
+@keyframes drift {
+  0% { transform: translate(0,0) scale(0); opacity: 0; }
+  10% { opacity: 1; transform: scale(1); }
+  90% { opacity: 0.5; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(0.5); opacity: 0; }
+}
+
+/* Vignette */
+.vignette {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 85% 85% at 50% 50%, transparent 35%, rgba(0,0,0,0.72) 100%);
+  pointer-events: none;
+}
+.scanlines {
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent 0px, transparent 3px, rgba(0,0,0,0.03) 3px, rgba(0,0,0,0.03) 4px);
+  pointer-events: none;
+}
+
+/* ══════════════════════════════
+   NAVBAR (fixed)
+══════════════════════════════ */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  padding: 28px 40px;
+  animation: fadeDown 1.2s ease forwards;
+  /* glassmorphism on scroll — toggled via JS */
+  transition: background 0.5s, backdrop-filter 0.5s, padding 0.4s;
+}
+nav.scrolled {
+  background: rgba(5,3,2,0.7);
+  backdrop-filter: blur(12px);
+  padding: 18px 40px;
+}
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.nav-container {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.nav-links { display: flex; gap: 0; list-style: none; align-items: center; }
+.nav-links.left-links { justify-content: flex-end; }
+.nav-links.right-links { justify-content: flex-start; }
+.nav-links li a {
+  font-family: 'Cinzel', serif;
+  font-size: 9px; font-weight: 600;
+  letter-spacing: 0.2em;
+  color: rgba(200,180,140,0.62);
+  text-decoration: none; text-transform: uppercase;
+  transition: color 0.3s, letter-spacing 0.3s;
+  position: relative; cursor: none;
+  padding: 0 20px;
+}
+.nav-links li a::after {
+  content: '';
+  position: absolute;
+  bottom: -5px; left: 50%; right: 50%;
+  height: 1px; background: var(--gold);
+  transition: left 0.3s, right 0.3s;
+}
+.nav-links li a:hover { color: var(--gold-light); letter-spacing: 0.28em; }
+.nav-links li a:hover::after { left: 20px; right: 20px; }
+
+.nav-logo-wrap { display: flex; align-items: center; gap: 14px; padding: 0 28px; }
+.nav-logo-line { width: 26px; height: 1px; background: linear-gradient(to right, transparent, rgba(200,146,42,0.45)); }
+.nav-logo-line.r { background: linear-gradient(to left, transparent, rgba(200,146,42,0.45)); }
+.nav-logo-text {
+  font-family: 'Cinzel', serif; font-size: 14px; font-weight: 900;
+  letter-spacing: 0.5em; color: var(--gold-light); text-transform: uppercase;
+  text-shadow: 0 0 28px rgba(200,146,42,0.55); white-space: nowrap;
+}
+/* ══════════════════════════════
+   UNIVERSAL SECTION SETTINGS
+══════════════════════════════ */
+section {
+  padding: 100px 5vw;
+}
+
+/* ── Custom Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--void);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, var(--dark), var(--gold), var(--dark));
+  border-radius: 10px;
+  border: 1px solid var(--void);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold-light);
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold) var(--void);
+}
+
+/* Scroll Progress Bar */
+.scroll-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: rgba(200, 146, 42, 0.05);
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.scroll-progress.visible {
+  opacity: 1;
+}
+.scroll-progress-bar {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, var(--gold), var(--gold-light));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.15s ease-out;
+  box-shadow: 0 0 10px rgba(200, 146, 42, 0.5);
+}
+
+/* Scroll-reveal */
+.reveal {
+  opacity: 0; transform: translateY(40px);
+  transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-left {
+  opacity: 0; transform: translateX(-40px);
+  transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal-left.visible { opacity: 1; transform: translateX(0); }
